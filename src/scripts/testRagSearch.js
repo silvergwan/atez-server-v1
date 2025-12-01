@@ -22,4 +22,4 @@ async function search(query) {
   console.log("검색 결과:", data);
 }
 
-search("유민아는 음악이나 라디오 좋아하나?");
+search("유민아는 어떤 시간을 좋아해?");
