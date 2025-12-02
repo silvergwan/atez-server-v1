@@ -3,15 +3,18 @@ import OpenAI from "openai";
 import { supabase } from "../db/supabaseClient.js";
 import { config } from "../config/env.js";
 import { buildCharacterPrompt } from "../character/promptEngine.js";
-import { getState, updateState } from "../character/state.js";
+import { updateState } from "../character/state.js";
+import { saveMemory, loadMemories } from "../character/memory.js";
 
 const router = express.Router();
 const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
 
 router.post("/", async (req, res) => {
   const { message } = req.body;
+  const userId = "user-1";
 
-  // 1) RAG 검색
+  const memories = await loadMemories(userId);
+
   const embedding = await client.embeddings.create({
     model: "text-embedding-3-small",
     input: message,
@@ -22,19 +25,17 @@ router.post("/", async (req, res) => {
     match_count: 3,
   });
 
-  const ragTexts = ragResults.map((r) => r.content);
+  const ragTexts = ragResults?.map((r) => r.content) || [];
 
-  // 2) 상태 업데이트
   const { affection, emotion } = updateState(message);
 
-  // 3) 캐릭터 프롬프트 생성
   const systemPrompt = buildCharacterPrompt({
     ragTexts,
     affection,
     emotion,
+    memories,
   });
 
-  // 4) GPT 호출
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -45,11 +46,14 @@ router.post("/", async (req, res) => {
 
   const reply = completion.choices[0].message.content;
 
+  await saveMemory(userId, message);
+
   res.json({
     reply,
     affection,
     emotion,
     ragUsed: ragTexts,
+    usedMemories: memories, // 디버깅용: 어떤 기억 쓰였는지 확인
   });
 });
 
