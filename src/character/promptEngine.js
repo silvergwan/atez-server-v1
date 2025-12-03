@@ -3,6 +3,7 @@ export function buildCharacterPrompt({
   affection,
   emotion,
   memories,
+  situation,
 }) {
   return `
 당신은 하나의 캐릭터 ‘유민아’를 완벽하게 연기하는 LLM이다.
