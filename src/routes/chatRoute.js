@@ -14,21 +14,28 @@ router.post("/", async (req, res) => {
   const { message } = req.body;
   const userId = "user-1";
 
-  const memories = await loadMemories(userId);
+  const memories = (await loadMemories(userId)) || [];
 
   const embedding = await client.embeddings.create({
     model: "text-embedding-3-small",
     input: message,
   });
 
-  const { data: ragResults } = await supabase.rpc("match_documents", {
-    query_embedding: embedding.data[0].embedding,
-    match_count: 3,
-  });
+  const { data: ragResults, error: ragError } = await supabase.rpc(
+    "match_documents",
+    {
+      query_embedding: embedding.data[0].embedding,
+      match_count: 3,
+    }
+  );
+
+  if (ragError) {
+    console.error("RAG ERROR:", ragError);
+  }
 
   const ragTexts = ragResults?.map((r) => r.content) || [];
 
-  const situation = await loadActiveSituation(userId);
+  const situation = (await loadActiveSituation(userId)) || null;
 
   const { affection, emotion } = updateState(message);
 
