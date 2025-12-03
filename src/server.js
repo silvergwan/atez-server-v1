@@ -10,12 +10,16 @@ app.use(
   rateLimit({
     windowMs: 60 * 1000,
     max: 20,
-  }),
+  })
+);
+
+app.use(
   cors({
     origin: "*",
     methods: ["GET", "POST"],
   })
 );
+
 app.use(express.json());
 
 app.use("/chat", chatRoute);
