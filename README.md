@@ -1,5 +1,3 @@
-}
-
 # Atez Server v1
 
 Atez Server는 캐릭터 기반 AI 채팅 서비스를 위한 백엔드 서버이다.
