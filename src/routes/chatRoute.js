@@ -11,7 +11,7 @@ const router = express.Router();
 const client = new OpenAI({ apiKey: config.OPENAI_API_KEY });
 
 router.post("/", async (req, res) => {
-  const { message } = req.body;
+  const { message, history = [] } = req.body; // history 받기
   const userId = "user-1";
 
   const memories = (await loadMemories(userId)) || [];
@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
     {
       query_embedding: embedding.data[0].embedding,
       match_count: 3,
-    }
+    },
   );
 
   if (ragError) {
@@ -51,6 +51,7 @@ router.post("/", async (req, res) => {
     model: "gpt-4o-mini",
     messages: [
       { role: "system", content: systemPrompt },
+      ...history,
       { role: "user", content: message },
     ],
   });
