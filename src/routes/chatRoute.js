@@ -21,10 +21,13 @@ router.post("/", async (req, res) => {
     input: message,
   });
 
-  const { data: ragResults } = await supabase.rpc("match_documents", {
-    query_embedding: embedding.data[0].embedding,
-    match_count: 3,
-  });
+  const { data: ragResults, error: ragError } = await supabase.rpc(
+    "match_documents",
+    {
+      query_embedding: embedding.data[0].embedding,
+      match_count: 3,
+    },
+  );
 
   if (ragError) {
     console.error("RAG ERROR:", ragError);
