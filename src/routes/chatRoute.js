@@ -58,7 +58,7 @@ router.post("/", async (req, res) => {
 
   const reply = completion.choices[0].message.content;
 
-  await saveMemory(userId, message);
+  saveMemory(userId, message);
 
   res.json({
     reply,
