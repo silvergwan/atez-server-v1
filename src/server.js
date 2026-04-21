@@ -22,7 +22,7 @@ app.use(
 // 🌍 프론트 Vercel 도메인만 허용
 app.use(
   cors({
-    origin: ["https://atez-web.vercel.app"],
+    origin: ["https://atez-web.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "X-CLIENT-TOKEN"],
   }),
