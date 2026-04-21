@@ -37,7 +37,7 @@ router.post("/", async (req, res) => {
 
   const situation = (await loadActiveSituation(userId)) || null;
 
-  const { affection, emotion } = updateState(message);
+  const { affection, emotion } = await updateState(userId, message);
 
   const systemPrompt = buildCharacterPrompt({
     ragTexts,
